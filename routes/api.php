@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExitController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MovementController;
 use App\Http\Controllers\EquipmentController;
 
 Route::get('/ping', function () {
@@ -23,10 +24,13 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     //Resources
-    Route::apiResource('/equipment', EquipmentController::class);
-    Route::apiResource('entries', EntryController::class)->only(['index', 'store']);
-    Route::apiResource('exits', ExitController::class)->only(['index', 'store']);
     Route::apiResource('/category', CategoryController::class);
+    Route::apiResource('/equipment', EquipmentController::class);
+    Route::apiResource('exits', ExitController::class)->only(['index', 'store']);
+    Route::apiResource('entries', EntryController::class)->only(['index', 'store']);
+
+    // movement
+    Route::get('/movements', [MovementController::class, 'index']);
 
     // stock
     Route::get('/stock', [StockController::class, 'index']);

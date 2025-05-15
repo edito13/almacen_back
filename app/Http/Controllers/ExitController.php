@@ -23,22 +23,36 @@ class ExitController extends Controller {
         $validated = $request->validate([
             'equipment_id' => 'required|exists:equipment,id',
             'quantity' => 'required|integer|min:1',
+            'concept' => 'nullable|string',
+            'responsible' => 'nullable|string',
+            'exit_date' => 'nullable|date',
         ]);
+
+        $equipment = Equipment::findOrFail($validated['equipment_id']);
+
+        // Verificar se há estoque suficiente
+        if ($validated['quantity'] > $equipment->quantity) {
+            return response()->json([
+                'error' => true,
+                'message' => 'Quantidade indisponível em estoque.'
+            ]);
+        }
 
         $exit = ExitRecord::create($validated);
 
-        // Atualiza a quantidade do equipamento
-        $equipment = Equipment::findOrFail($request->equipment_id);
+        // Atualizar estoque
+        $equipment->decrement('quantity', $validated['quantity']);
 
-        if ($equipment->quantity < $request->quantity) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Não há equipamento suficiente para a saída.',
-            ], 400);
-        }
-
-        $equipment->quantity -= $request->quantity;
-        $equipment->save();
+        // Registrar o movimento
+        Movement::create([
+            'equipment_id' => $exit->equipment_id,
+            'type' => 'exit',
+            'quantity' => $exit->quantity,
+            'concept' => $exit->concept,
+            'responsible' => $exit->responsible,
+            'details' => null,
+            'movement_date' => $exit->exit_date,
+        ]);
 
         return response()->json($exit, 201);
     }

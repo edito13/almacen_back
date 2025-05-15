@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Entry;
+use App\Models\Movement;
 use App\Models\Equipment;
 use Illuminate\Http\Request;
 
-class EntryController extends Controller
-{
+class EntryController extends Controller{
     /**
      * Display a listing of the resource.
      */
@@ -21,15 +21,31 @@ class EntryController extends Controller
     public function store(Request $request){
         $validated = $request->validate([
             'equipment_id' => 'required|exists:equipment,id',
-            'quantity' => 'required|integer|min:1',
+            'supplier'     => 'nullable|string|max:255',
+            'details'      => 'nullable|string',
+            'min_quantity' => 'nullable|integer|min:0',
+            'concept'      => 'required|string|max:255',
+            'entry_date'   => 'required|date',
+            'responsible'  => 'required|string|max:255',
+            'quantity'     => 'required|integer|min:1',
         ]);
 
         $entry = Entry::create($validated);
 
-        // Atualiza a quantidade do equipamento
-        $equipment = Equipment::findOrFail($request->equipment_id);
-        $equipment->quantity += $request->quantity;
-        $equipment->save();
+        // Atualizar quantidade no estoque
+        $equipment = Equipment::findOrFail($validated['equipment_id']);
+        $equipment->increment('quantity', $validated['quantity']);
+
+        // Registrar o movimento
+        Movement::create([
+            'equipment_id'  => $entry->equipment_id,
+            'type'          => 'entry',
+            'quantity'      => $entry->quantity,
+            'concept'       => $entry->concept,
+            'responsible'   => $entry->responsible,
+            'details'       => $entry->details,
+            'movement_date' => $entry->entry_date,
+        ]);
 
         return response()->json($entry, 201);
     }

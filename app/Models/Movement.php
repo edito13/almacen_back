@@ -5,18 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Entry extends Model {
+class Movement extends Model {
     use HasFactory;
 
     protected $fillable = [
         'equipment_id',
+        'type',
         'quantity',
-        'supplier',
-        'details',
-        'min_quantity',
         'concept',
-        'entry_date',
         'responsible',
+        'details',
+        'movement_date',
     ];
 
     public function equipment() {
