@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Movement;
 use App\Models\Equipment;
 use App\Models\ExitRecord;
 use Illuminate\Http\Request;
@@ -55,5 +56,10 @@ class ExitController extends Controller {
         ]);
 
         return response()->json($exit, 201);
+    }
+
+    public function show(string $id){
+        $exit = ExitRecord::findOrFail($id);
+        return response()->json($exit);
     }
 }

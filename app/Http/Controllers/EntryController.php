@@ -49,4 +49,9 @@ class EntryController extends Controller{
 
         return response()->json($entry, 201);
     }
+
+    public function show(string $id){
+        $entry = Entry::findOrFail($id);
+        return response()->json($entry);
+    }
 }
