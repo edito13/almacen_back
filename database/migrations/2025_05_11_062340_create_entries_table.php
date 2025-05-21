@@ -12,7 +12,6 @@ return new class extends Migration {
             $table->integer('quantity');
             $table->string('supplier')->nullable();
             $table->text('details')->nullable();
-            $table->integer('min_quantity')->nullable();
             $table->string('concept')->nullable();
             $table->date('entry_date')->nullable();
             $table->string('responsible')->nullable();

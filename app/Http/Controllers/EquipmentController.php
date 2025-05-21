@@ -9,7 +9,7 @@ class EquipmentController extends Controller
 {
     public function index()
     {
-        return Equipment::with(['entries', 'exits'])->get();
+        return Equipment::with(['entries', 'exits', 'category'])->get();
     }
 
     public function store(Request $request)
@@ -17,6 +17,7 @@ class EquipmentController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
+            'min_quantity' => 'nullable|integer|min:0',
             'type' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);
@@ -39,6 +40,7 @@ class EquipmentController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'quantity' => 'sometimes|required|integer|min:0',
+            'min_quantity' => 'nullable|integer|min:0',
             'type' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);

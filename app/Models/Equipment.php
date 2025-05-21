@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Equipment extends Model {
     use HasFactory;
 
-    protected $fillable = ['name', 'quantity', 'category_id', "type"];
+    protected $fillable = ['name', 'quantity', 'min_quantity', 'category_id', "type"];
 
     public function entries(){
         return $this->hasMany(Entry::class);

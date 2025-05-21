@@ -23,7 +23,6 @@ class EntryController extends Controller{
             'equipment_id' => 'required|exists:equipment,id',
             'supplier'     => 'nullable|string|max:255',
             'details'      => 'nullable|string',
-            'min_quantity' => 'nullable|integer|min:0',
             'concept'      => 'required|string|max:255',
             'entry_date'   => 'required|date',
             'responsible'  => 'required|string|max:255',

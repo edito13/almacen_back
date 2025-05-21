@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('type');
             $table->integer('quantity')->default(0);
+            $table->integer('min_quantity')->default(0);
             $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });

@@ -13,7 +13,6 @@ class Entry extends Model {
         'quantity',
         'supplier',
         'details',
-        'min_quantity',
         'concept',
         'entry_date',
         'responsible',
