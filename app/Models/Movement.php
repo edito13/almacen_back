@@ -9,6 +9,8 @@ class Movement extends Model {
     use HasFactory;
 
     protected $fillable = [
+        'entry_id',
+        'exit_record_id',
         'equipment_id',
         'type',
         'quantity',
@@ -20,5 +22,13 @@ class Movement extends Model {
 
     public function equipment() {
         return $this->belongsTo(Equipment::class);
+    }
+
+    public function exitRecord() {
+        return $this->belongsTo(ExitRecord::class, 'exit_record_id');
+    }
+
+    public function entry() {
+        return $this->belongsTo(Entry::class, 'entry_id');
     }
 }

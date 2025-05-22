@@ -21,4 +21,8 @@ class Entry extends Model {
     public function equipment() {
         return $this->belongsTo(Equipment::class);
     }
+
+    public function movement() {
+        return $this->hasOne(Movement::class, 'entry_id');
+    }
 }

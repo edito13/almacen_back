@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('responsible')->nullable();
             $table->text('details')->nullable();
             $table->date('movement_date')->nullable();
+            $table->foreignId('entry_id')->nullable()->constrained('entries')->onDelete('cascade');
+            $table->foreignId('exit_record_id')->nullable()->constrained('exits')->onDelete('cascade');
             $table->timestamps();
         });
     }
