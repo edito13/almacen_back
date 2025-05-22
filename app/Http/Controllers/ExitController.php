@@ -6,6 +6,8 @@ use App\Models\Movement;
 use App\Models\Equipment;
 use App\Models\ExitRecord;
 use Illuminate\Http\Request;
+use App\Notifications\LowStockNotification;
+use Illuminate\Support\Facades\Notification;
 
 class ExitController extends Controller {
     /**
@@ -40,6 +42,7 @@ class ExitController extends Controller {
         }
 
         $exit = ExitRecord::create($validated);
+        $wasAboveMin = $equipment->quantity >= $equipment->min_quantity;
 
         // Atualizar estoque
         $equipment->decrement('quantity', $validated['quantity']);
@@ -55,6 +58,13 @@ class ExitController extends Controller {
             'details' => null,
             'movement_date' => $exit->exit_date,
         ]);
+
+
+        // Checa se caiu abaixo do mínimo agora
+        if ($wasAboveMin && $equipment->quantity < $equipment->min_quantity) {
+            Notification::route('mail', 'silvestredourado766@gmail.com')
+                ->notify(new LowStockNotification($equipment));
+        }
 
         return response()->json($exit, 201);
     }
@@ -89,6 +99,7 @@ class ExitController extends Controller {
 
         // Atualizar a saída
         $exit->update($validated);
+        $wasAboveMin = $equipment->quantity >= $equipment->min_quantity;
 
         // Atualizar o estoque com a nova quantidade
         $equipment->decrement('quantity', $validated['quantity']);
@@ -100,6 +111,13 @@ class ExitController extends Controller {
             'responsible'   => $exit->responsible,
             'movement_date' => $exit->exit_date,
         ]);
+
+
+        // Checa se caiu abaixo do mínimo agora
+        if ($wasAboveMin && $equipment->quantity < $equipment->min_quantity) {
+            Notification::route('mail', 'silvestredourado766@gmail.com')
+                ->notify(new LowStockNotification($equipment));
+        }
 
         return response()->json($exit);
     }
