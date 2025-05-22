@@ -25,10 +25,10 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
     //Resources
+    Route::apiResource('exit', ExitController::class);
+    Route::apiResource('entry', EntryController::class);
     Route::apiResource('category', CategoryController::class);
     Route::apiResource('equipment', EquipmentController::class);
-    Route::apiResource('exit', ExitController::class)->only(['index', 'show', 'store']);
-    Route::apiResource('entry', EntryController::class)->only(['index', 'show', 'store']);
 
     // movement
     Route::get('/movement', [MovementController::class, 'index']);

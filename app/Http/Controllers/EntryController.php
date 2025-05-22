@@ -37,6 +37,7 @@ class EntryController extends Controller{
 
         // Registrar o movimento
         Movement::create([
+            'entry_id'      => $entry->id,
             'equipment_id'  => $entry->equipment_id,
             'type'          => 'entry',
             'quantity'      => $entry->quantity,
@@ -53,4 +54,62 @@ class EntryController extends Controller{
         $entry = Entry::findOrFail($id);
         return response()->json($entry);
     }
+
+    public function update(Request $request, string $id){
+        $entry = Entry::findOrFail($id);
+
+        $validated = $request->validate([
+            'supplier'     => 'nullable|string|max:255',
+            'details'      => 'nullable|string',
+            'concept'      => 'required|string|max:255',
+            'entry_date'   => 'required|date',
+            'responsible'  => 'required|string|max:255',
+            'quantity'     => 'required|integer|min:1',
+        ]);
+
+
+        $oldQuantity = $entry->quantity;
+
+        // Atualizar o estoque com base na diferença de quantidade
+        $equipment = Equipment::findOrFail($entry->equipment_id);
+        $difference = $validated['quantity'] - $oldQuantity;
+        $equipment->increment('quantity', $difference);
+
+        // Atualizar a entrada
+        $entry->update($validated);
+
+        // Atualizar o movimento correspondente
+
+        $entry->movement()->update([
+            'quantity'      => $entry->quantity,
+            'concept'       => $entry->concept,
+            'responsible'   => $entry->responsible,
+            'details'       => $entry->details,
+            'movement_date' => $entry->entry_date,
+        ]);
+
+        return response()->json($entry);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id){
+        $entry = Entry::findOrFail($id);
+        $equipment = Equipment::findOrFail($entry->equipment_id);
+
+        // Atualizar quantidade no estoque
+        $equipment->decrement('quantity', $entry->quantity);
+
+        // Deletar o movimento correspondente
+        $entry->movement()->delete();
+
+        // Deletar a entrada
+        $entry->delete();
+
+        return response()->json([
+            'message' => 'Entrada deletada com sucesso.'
+        ], 200);
+    }
+
 }
